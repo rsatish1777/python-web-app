@@ -1,0 +1,39 @@
+# this block is for gunicorn socket file
+
+[Unit]
+Description=gunicorn daemon
+Requires=gunicorn.socket
+After=network.target
+
+[Service]
+User=deployment-user
+Group=www-data
+WorkingDirectory=/home/deployment-user/polling
+ExecStart=/home/deployment-user/venv/bin/gunicorn \
+          --access-logfile - \
+          --workers 3 \
+          --bind unix:/run/gunicorn.sock \
+          polling.wsgi:application
+
+[Install]
+WantedBy=multi-user.target
+
+
+
+# This is a sample content for Nginx configuration file
+# feel free to modify it to meet your requirements
+
+server {
+    listen 80;
+    server_name 192.168.56.101 polling.test;
+
+    location = /favicon.ico { access_log off; log_not_found off; }
+    location /static/ {
+        root /home/deployment-user/polling;
+    }
+
+    location / {
+        include proxy_params;
+        proxy_pass http://unix:/run/gunicorn.sock;
+    }
+}
