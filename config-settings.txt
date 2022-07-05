@@ -25,7 +25,7 @@ WantedBy=multi-user.target
 
 server {
     listen 80;
-    server_name 192.168.56.101 polling.test;
+    server_name public-ip-of-ec2-server;
 
     location = /favicon.ico { access_log off; log_not_found off; }
     location /static/ {
